@@ -22,21 +22,27 @@ batch_size1 = 32
 model = tf.keras.models.Sequential([
     tf.keras.layers.Conv2D(16, (3, 3), activation='relu', input_shape=(224, 224, 3)),
     tf.keras.layers.MaxPooling2D(2, 2),
+    tf.keras.layers.Dropout(0.25),
     # The second convolution
     tf.keras.layers.Conv2D(32, (3, 3), activation='relu'),
     tf.keras.layers.MaxPooling2D(2, 2),
+    tf.keras.layers.Dropout(0.25),
     # The third convolution
     tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
     tf.keras.layers.MaxPooling2D(2, 2),
+    tf.keras.layers.Dropout(0.25),
     # The fourth convolution
     tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
     tf.keras.layers.MaxPooling2D(2, 2),
+    tf.keras.layers.Dropout(0.25),
     # The fifth convolution
     tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
     tf.keras.layers.MaxPooling2D(2, 2),
+    tf.keras.layers.Dropout(0.25),
     tf.keras.layers.Flatten(),
     #tf.keras.layers.Flatten(input_shape=(224,224,3)),
     tf.keras.layers.Dense(1000, activation='relu'),
+    tf.keras.layers.Dropout(0.25),
     tf.keras.layers.Dense(1, activation='sigmoid')
 ])
 
@@ -101,6 +107,31 @@ history = model.fit(
 
 model.evaluate(validation_gen, verbose=2)
 model.evaluate(test_gen, verbose=2)
+
+import os.path
+if os.path.isfile('models/skinmisc.h5') is False:
+    model.save('models/skinmisc.h5')
+    
+acc = history.history['accuracy']
+val_acc = history.history['val_accuracy']
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+
+epochs_range = range(10)
+
+plt.figure(figsize=(10, 10))
+plt.subplot(2, 2, 1)
+plt.plot(epochs_range, acc, label='Training Accuracy')
+plt.plot(epochs_range, val_acc, label='Validation Accuracy')
+plt.legend(loc='lower right')
+plt.title('Training and Validation Accuracy')
+
+plt.subplot(2, 2, 2)
+plt.plot(epochs_range, loss, label='Training Loss')
+plt.plot(epochs_range, val_loss, label='Validation Loss')
+plt.legend(loc='upper right')
+plt.title('Training and Validation Loss')
+plt.show()    
 
 img = cv2.imread('data/test/malignant/ISIC_0014434_downsampled')
 img = cv2.resize(img,(224,224))
